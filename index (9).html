@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Live Editor & Converter</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+        :root {
+            --background-color: #1a1a2e;
+            --container-bg: rgba(255, 255, 255, 0.1);
+            --textarea-bg: rgba(0, 0, 0, 0.3);
+            --preview-bg: #ffffff;
+            --text-color: #e0e0e0;
+            --header-color: #ffffff;
+            --button-bg: #4a90e2;
+            --button-hover-bg: #357abd;
+            --border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            background-image: linear-gradient(45deg, #16222a, #3a6073);
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 1400px;
+            background: var(--container-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--header-color);
+            margin: 0;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+        
+        .editor-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            min-height: 500px;
+        }
+
+        .editor, .preview {
+            display: flex;
+            flex-direction: column;
+        }
+
+        h2 {
+            margin-top: 0;
+            font-weight: 400;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        #htmlNotepad {
+            flex-grow: 1;
+            width: 100%;
+            background-color: var(--textarea-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1rem;
+            resize: none;
+            box-sizing: border-box;
+        }
+
+        #previewDisplay {
+            flex-grow: 1;
+            width: 100%;
+            background-color: var(--preview-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+        
+        #convertButton {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            margin-top: 2rem;
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        #convertButton:hover {
+            background-color: var(--button-hover-bg);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .editor-area {
+                grid-template-columns: 1fr;
+            }
+            body {
+                padding: 1rem;
+            }
+            .main-container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <header>
+            <h1>HTML Live Editor</h1>
+            <p>Write your HTML code in the editor and see the live preview instantly.</p>
+        </header>
+
+        <main class="editor-area">
+            <div class="editor">
+                <h2>HTML Code</h2>
+                <textarea id="htmlNotepad" placeholder="Type your HTML code here..."></textarea>
+            </div>
+            <div class="preview">
+                <h2>Live Preview</h2>
+                <iframe id="previewDisplay" title="Live Preview"></iframe>
+            </div>
+        </main>
+
+        <button id="convertButton">Convert & Download index.html</button>
+    </div>
+
+    <script>
+        const htmlNotepad = document.getElementById('htmlNotepad');
+        const previewDisplay = document.getElementById('previewDisplay');
+        const convertButton = document.getElementById('convertButton');
+
+        // Function to update the preview
+        function updatePreview() {
+            const htmlContent = htmlNotepad.value;
+            const previewDoc = previewDisplay.contentWindow.document;
+            previewDoc.open();
+            previewDoc.write(htmlContent);
+            previewDoc.close();
+        }
+
+        // Update preview in real-time as user types
+        htmlNotepad.addEventListener('input', updatePreview);
+
+        // Initial preview update on page load
+        updatePreview();
+
+        // Functionality for the convert and download button
+        convertButton.addEventListener('click', function() {
+            const htmlContent = htmlNotepad.value;
+
+            if (!htmlContent.trim()) {
+                alert('Please write some HTML code in the editor before converting.');
+                return;
+            }
+
+            // Create a Blob for the file download
+            const file = new Blob([htmlContent], { type: 'text/html' });
+
+            // Create a temporary anchor element for downloading. [4, 5]
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(file);
+            a.download = 'index.html'; // Set the filename to index.html
+            document.body.appendChild(a);
+            
+            a.click();
+
+            // Clean up by removing the temporary anchor
+            document.body.removeChild(a);
+        });
+    </script>
+
+</body>
+</html>
